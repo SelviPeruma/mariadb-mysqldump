@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mariadb-backup
+  namespace: mariadb
+spec:
+  schedule: "5 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mariadb-backup
+            image: jrcichra/mariadb-mysqldump
+            imagePullPolicy: IfNotPresent
+            environment:
+              - name: MARIADB_USER
+                value: justin
+              - name: MARIADB_PASSWORD
+                value: p@ssw0rd
+              - name: HOST
+                value: mariadb.mariadb
+              - name: PORT
+                value: 3306
+              - name: SSH_PORT
+                value: 22
+              - name: SSH_USER
+                value: justin
+              - name: SSH_HOST
+                value: example.com
+              - name: TARGET_PATH
+                value: /somewhere/over/the/rainbow
+          restartPolicy: OnFailure
+          volumeMounts:
+            - name: ssh
+              mountPath: /root/.ssh
+        volumes:
+          - name: ssh
+            hostPath: 
+              path: /root/.ssh
+              type: Directory
+
