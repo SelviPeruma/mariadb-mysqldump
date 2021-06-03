@@ -1,4 +1,4 @@
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: mariadb-backup
@@ -13,7 +13,7 @@ spec:
           - name: mariadb-backup
             image: jrcichra/mariadb-mysqldump
             imagePullPolicy: IfNotPresent
-            environment:
+            env:
               - name: MARIADB_USER
                 value: justin
               - name: MARIADB_PASSWORD
@@ -30,13 +30,13 @@ spec:
                 value: example.com
               - name: TARGET_PATH
                 value: /somewhere/over/the/rainbow
+            volumeMounts:
+              - name: ssh
+                mountPath: /root/.ssh
           restartPolicy: OnFailure
-          volumeMounts:
+          volumes:
             - name: ssh
-              mountPath: /root/.ssh
-        volumes:
-          - name: ssh
-            hostPath: 
-              path: /root/.ssh
-              type: Directory
+              hostPath: 
+                path: /root/.ssh
+                type: Directory
 
